@@ -31,6 +31,8 @@ the same order of magnitude.
 package bitmapsort;
 
 import com.sun.org.apache.xalan.internal.xsltc.dom.BitArray;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -44,7 +46,7 @@ public class BitMapSort
      */
     public static void main(String[] args) 
     {
-        int[] unsortedScores = {37, 89, 41, 65, 91, 53};
+        int[] unsortedScores = {37, 89, 41, 65, 91, 41, 53};
         int[] sortedArr = bitMapSort(unsortedScores, 100);
         
         for (int i:sortedArr)
@@ -58,11 +60,20 @@ public class BitMapSort
         if (len <= 1)
             return unsorted;
         
-        BitArray bitArr = new BitArray(maxVal+1);
-        
+        Map<Integer, Integer> map = new HashMap<>();
+                
         for (int i=0; i<len; i++)
         {
-            bitArr.setBit(unsorted[i]);
+            if (map.get(unsorted[i]) != null)
+            {
+                int count = map.get(unsorted[i]);
+                count++;
+                map.put(unsorted[i], count);
+            }
+            else
+            {
+                map.put(unsorted[i], 1);
+            }
         }
         
         int[] sortedArr = new int[len];
@@ -70,10 +81,15 @@ public class BitMapSort
         
         for(int i=0; i<maxVal+1; i++)
         {
-            if (bitArr.getBit(i))
+            if (map.get(i) != null)
             {
-                sortedArr[j] = i;
-                j++;
+                int count = map.get(i);
+                while(count>0)
+                {
+                    sortedArr[j] = i;
+                    count--;
+                    j++;
+                }
             }
         }
         
